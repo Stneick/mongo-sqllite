@@ -108,9 +108,9 @@ class StudentApp(QWidget):
         self.update_btn = QPushButton("Update")
         self.update_btn.clicked.connect(self.update_record)
         grid.addWidget(self.update_btn, 2, 2)
-
+        
         self.remove_btn = QPushButton("Remove")
-        self.remove_btn.setEnabled(False)
+        self.remove_btn.clicked.connect(self.remove_record)
         grid.addWidget(self.remove_btn, 3, 2)
 
         self.close_btn = QPushButton("Close")
@@ -188,6 +188,27 @@ class StudentApp(QWidget):
             QMessageBox.information(self, "Success", "Record updated.")
         else:
             QMessageBox.warning(self, "Error", "No record updated.")
+    
+    def remove_record(self):
+        ident = self.id_input.text()
+        if not ident:
+            QMessageBox.warning(self, "Error", "Provide ID to delete.")
+            return
+        cursor.execute("DELETE FROM students WHERE ID = ?", (ident,))
+        conn.commit()
+        if cursor.rowcount > 0:
+            QMessageBox.information(self, "Success", "Record deleted.")
+            self.clear_fields()
+        else:
+            QMessageBox.warning(self, "Error", "No record found.")
+    
+    def clear_fields(self):
+        self.id_input.clear()
+        self.lname_input.clear()
+        self.fname_input.clear()
+        self.subject_input.clear()
+        self.grade_input.clear()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
